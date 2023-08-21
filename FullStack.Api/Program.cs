@@ -1,3 +1,4 @@
+using AutoMapper;
 using FullStack.Api.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("conn")));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 var app = builder.Build();
 

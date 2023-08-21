@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace FullStack.Api.Migrations
 {
-    public partial class bbb : Migration
+    public partial class dayyyyy : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -26,19 +26,17 @@ namespace FullStack.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Signups",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Firstname = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Lastname = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    PasswordHash = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Signups", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
         }
 
@@ -48,7 +46,7 @@ namespace FullStack.Api.Migrations
                 name: "Employees");
 
             migrationBuilder.DropTable(
-                name: "Signups");
+                name: "Users");
         }
     }
 }

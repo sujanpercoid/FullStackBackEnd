@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FullStack.Api.Migrations
 {
     [DbContext(typeof(FullStackDbContext))]
-    [Migration("20230816102028_bbb")]
-    partial class bbb
+    [Migration("20230821043549_dayyyyy")]
+    partial class dayyyyy
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -50,30 +50,24 @@ namespace FullStack.Api.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("FullStack.Api.Models.Signup", b =>
+            modelBuilder.Entity("FullStack.Api.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("PasswordHash")
+                        .HasColumnType("varbinary(max)");
 
-                    b.Property<string>("Firstname")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Lastname")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("PasswordSalt")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Signups");
+                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }
