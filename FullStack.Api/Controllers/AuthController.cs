@@ -29,24 +29,7 @@ namespace FullStack.Api.Controllers
 
         public static User user = new User();
 
-        //  WithOut AutoMapper
-        //[HttpPost("register")]
-        //public async Task<ActionResult<User>> Register(UserDto request)
-        //{
-        //    if (user.Username == request.Username)
-        //            {
-        //               return BadRequest("User Already Exist");
-        //            }
-        //        CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
-
-        //    user.Username = request.Username;
-        //    user.PasswordHash = passwordHash;
-        //    user.PasswordSalt = passwordSalt;
-
-        //    return Ok(user);
-        //}
-
-        [HttpPost("register")]
+         [HttpPost("register")]
         public async Task<ActionResult<User>> Register(UserDto request)
         {
             if (await _login.Users.AnyAsync(u => u.Username == request.Username))
@@ -66,25 +49,8 @@ namespace FullStack.Api.Controllers
             return Ok(user);
         }
 
-
-        //[HttpPost("login")]
-        //public async Task<ActionResult<string>> Login(UserDto request)
-        //{
-        //    if (user.Username != request.Username)
-        //   {
-        //        return BadRequest("User Not Found");
-        //   }
-
-        //    if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
-        //   {
-        //       return BadRequest("Wrong Password");
-        //    }
-
-        //   string token = CreateToken(user);
-        //    return Ok(token);
-        //}
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(UserDto request)
+        public async Task<ActionResult<string>> Login(LoginDto request)
         {
             var user = await _login.Users.SingleOrDefaultAsync(u => u.Username == request.Username);
 
@@ -101,12 +67,76 @@ namespace FullStack.Api.Controllers
             string token = CreateToken(user);
 
             // Map User to UserDto before returning the token
+            
+            return Ok(new
+            {
+                Token = token,
+                User = new
+                {
+                    user.Username,
+                    user.Id
+                    
+                }
+            });
+        }
+        [HttpGet("{id:Guid}")]
+        
+        public async Task<IActionResult> GetUser([FromRoute] Guid id)
+        {
+            var user = await _login.Users.FirstOrDefaultAsync(x => x.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+
+            }
+            // returning from the dto
             var userDto = _mapper.Map<UserDto>(user);
-            return Ok(new { Token = token, User = userDto });
+            return Ok(userDto);
+            //returing from main database
+            //return Ok(employee);
+        }
+        [HttpPut]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> UpdateProfile([FromRoute] Guid id, UserDto request)
+        {
+            var profile = await _login.Users.FindAsync(id);
+            if (profile == null)
+            {
+                return NotFound();
+
+            }
+            profile.Username = request.Username;
+            profile.email = request.email;
+            profile.phone = request.phone;
+            profile.fullname = request.fullname;
+            
+            await _login.SaveChangesAsync();
+            return Ok(profile);
+
         }
 
 
 
+        [HttpDelete]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> DeleteProfile([FromRoute] Guid id)
+        {
+            var profile = await _login.Users.FindAsync(id);
+            if (profile == null)
+            {
+                return NotFound();
+
+            }
+            _login.Users.Remove(profile);
+            await _login.SaveChangesAsync();
+            return Ok(profile);
+
+
+        }
+
+
+
+        //Methods
         private string CreateToken(User user)
         {
             var key = GenerateSecurityKey();
