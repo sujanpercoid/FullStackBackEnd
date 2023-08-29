@@ -4,6 +4,7 @@ using FullStack.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FullStack.Api.Migrations
 {
     [DbContext(typeof(FullStackDbContext))]
-    partial class FullStackDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230828103949_tryyyyyy")]
+    partial class tryyyyyy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,30 +73,6 @@ namespace FullStack.Api.Migrations
                     b.HasKey("ProductId");
 
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("FullStack.Api.Models.Review", b =>
-                {
-                    b.Property<int>("ReviewId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"), 1L, 1);
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Reviews")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Username")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ReviewId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("FullStack.Api.Models.Test", b =>
@@ -164,44 +142,37 @@ namespace FullStack.Api.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserContactId")
-                        .HasColumnType("int");
-
                     b.HasKey("UserProductId");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ContactId");
 
-                    b.HasIndex("UserContactId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("UserProducts");
                 });
 
-            modelBuilder.Entity("FullStack.Api.Models.Review", b =>
-                {
-                    b.HasOne("FullStack.Api.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("FullStack.Api.Models.UserProduct", b =>
                 {
-                    b.HasOne("FullStack.Api.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
+                    b.HasOne("FullStack.Api.Models.User", "User")
+                        .WithMany("UserProducts")
+                        .HasForeignKey("ContactId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FullStack.Api.Models.User", "User")
+                    b.HasOne("FullStack.Api.Models.Product", "Product")
                         .WithMany("UserProducts")
-                        .HasForeignKey("UserContactId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Product");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FullStack.Api.Models.Product", b =>
+                {
+                    b.Navigation("UserProducts");
                 });
 
             modelBuilder.Entity("FullStack.Api.Models.User", b =>

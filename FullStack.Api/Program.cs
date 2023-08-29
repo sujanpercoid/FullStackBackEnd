@@ -1,5 +1,6 @@
 using AutoMapper;
 using FullStack.Api.Data;
+using FullStack.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,8 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("conn")));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
+
 
 var app = builder.Build();
 

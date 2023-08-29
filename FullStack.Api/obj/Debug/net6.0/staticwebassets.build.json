@@ -1,11 +1,19 @@
 {
   "Version": 1,
-  "Hash": "nS/gd72hChUwcRX7X1Dm8kdPAGybuKfxy5+rE/sYfaQ=",
+  "Hash": "zo8X9gkVSjCULNMyg7E1GQzsE8tuF4ScovD5R+m4sH4=",
   "Source": "FullStack.Api",
   "BasePath": "_content/FullStack.Api",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "FullStack.Api\\wwwroot",
+      "Source": "FullStack.Api",
+      "ContentRoot": "D:\\sujan\\new plular projects\\FullStack.Api\\FullStack.Api\\wwwroot\\",
+      "BasePath": "_content/FullStack.Api",
+      "Pattern": "**"
+    }
+  ],
   "Assets": []
 }

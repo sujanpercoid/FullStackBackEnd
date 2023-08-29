@@ -20,6 +20,8 @@
   <ItemGroup>
     <Folder Include="Interface\" />
     <Folder Include="Migrations\" />
+    <Folder Include="wwwroot\Uploads\common\" />
+    <Folder Include="wwwroot\Uploads\Product\" />
   </ItemGroup>
 
 </Project>

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FullStack.Api.Migrations
 {
     [DbContext(typeof(FullStackDbContext))]
-    [Migration("20230822045159_aru_added")]
-    partial class aru_added
+    [Migration("20230828095541_newattempt")]
+    partial class newattempt
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -50,10 +50,59 @@ namespace FullStack.Api.Migrations
                     b.ToTable("Employees");
                 });
 
+            modelBuilder.Entity("FullStack.Api.Models.Product", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"), 1L, 1);
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Price")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ProductName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ProductId");
+
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("FullStack.Api.Models.Test", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"), 1L, 1);
+
+                    b.Property<string>("ProductDetailes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ProductId");
+
+                    b.ToTable("Tests");
+                });
+
             modelBuilder.Entity("FullStack.Api.Models.User", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("ContactId")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContactId"), 1L, 1);
+
+                    b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("PasswordHash")
@@ -74,7 +123,7 @@ namespace FullStack.Api.Migrations
                     b.Property<long>("phone")
                         .HasColumnType("bigint");
 
-                    b.HasKey("Id");
+                    b.HasKey("ContactId");
 
                     b.ToTable("Users");
                 });

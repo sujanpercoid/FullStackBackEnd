@@ -18,13 +18,15 @@ namespace FullStack.Api.Controllers
         
         private readonly FullStackDbContext _login;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _environment;
 
         
 
-        public AuthController(FullStackDbContext login, IMapper mapper)
+        public AuthController(FullStackDbContext login, IMapper mapper,IWebHostEnvironment environment)
         {
             _login = login;
             _mapper = mapper;
+            _environment = environment;
         }
 
         public static User user = new User();
@@ -36,9 +38,11 @@ namespace FullStack.Api.Controllers
             {
                 return BadRequest("User Already Exists");
             }
+            
 
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
-
+           
+            
             var user = _mapper.Map<User>(request);
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
@@ -46,7 +50,8 @@ namespace FullStack.Api.Controllers
             _login.Users.Add(user);
             await _login.SaveChangesAsync();
 
-            return Ok(user);
+            var response = new { message = "User Added" };
+            return Ok(response);
         }
 
         [HttpPost("login")]
@@ -74,7 +79,8 @@ namespace FullStack.Api.Controllers
                 User = new
                 {
                     user.Username,
-                    user.Id
+                    user.Id,
+                    user.ContactId
                     
                 }
             });
@@ -109,7 +115,7 @@ namespace FullStack.Api.Controllers
             profile.email = request.email;
             profile.phone = request.phone;
             profile.fullname = request.fullname;
-            
+            //var userDto = _mapper.Map<UserDto>(user);
             await _login.SaveChangesAsync();
             return Ok(profile);
 
@@ -132,6 +138,47 @@ namespace FullStack.Api.Controllers
             return Ok(profile);
 
 
+        }
+
+        // image upload testing 
+        [HttpPost ("UploadImage")]
+        public async Task <ActionResult>UploadImage()
+        {
+            bool Result = false;
+            try
+            {
+                var _uploadedfiles = Request.Form.Files;
+                foreach(IFormFile source in _uploadedfiles)
+                {
+                    string Filename = source.FileName;
+                    string Filepath =GetFilePath(Filename);
+
+                    if (!System.IO.Directory.Exists(Filepath))
+                    {
+                        System.IO.Directory.CreateDirectory(Filepath);
+                    }
+                    string imagepath = Filepath + "\\image.png";
+                    if (System.IO.File.Exists(imagepath))
+                    {
+                        System.IO.File.Delete(imagepath);
+                    }
+                    using(FileStream stream = System.IO.File.Create(imagepath))
+                    {
+                        await source.CopyToAsync(stream);
+                        Result = true;
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            { }
+            
+            return Ok(Result);
+        }
+        [NonAction]
+        private string GetFilePath( string ProductCode)
+        {
+            return this._environment.WebRootPath + "\\Uploads\\Products\\" + ProductCode;
         }
 
 
