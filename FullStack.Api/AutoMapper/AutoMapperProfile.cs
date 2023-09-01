@@ -17,6 +17,7 @@ namespace FullStack.Api.AutoMapper
                 .ForMember(dest => dest.PasswordSalt, opt => opt.Ignore());
             CreateMap<ProductDto, Product>();
             CreateMap<ProductDto,UserProduct>();
+            CreateMap<Cart,CartDto>();
 
         }
     }

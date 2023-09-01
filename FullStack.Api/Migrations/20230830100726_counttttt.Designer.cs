@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FullStack.Api.Migrations
 {
     [DbContext(typeof(FullStackDbContext))]
-    [Migration("20230828103949_tryyyyyy")]
-    partial class tryyyyyy
+    [Migration("20230830100726_counttttt")]
+    partial class counttttt
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,6 +23,38 @@ namespace FullStack.Api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("FullStack.Api.Models.Cart", b =>
+                {
+                    b.Property<int>("CartId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartId"), 1L, 1);
+
+                    b.Property<int>("ContactId")
+                        .HasColumnType("int");
+
+                    b.Property<long>("Count")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("Price")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProductName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CartId");
+
+                    b.HasIndex("ContactId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Carts");
+                });
 
             modelBuilder.Entity("FullStack.Api.Models.Employee", b =>
                 {
@@ -73,6 +105,30 @@ namespace FullStack.Api.Migrations
                     b.HasKey("ProductId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("FullStack.Api.Models.Review", b =>
+                {
+                    b.Property<int>("ReviewId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"), 1L, 1);
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reviews")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ReviewId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("FullStack.Api.Models.Test", b =>
@@ -142,25 +198,28 @@ namespace FullStack.Api.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("UserContactId")
+                        .HasColumnType("int");
+
                     b.HasKey("UserProductId");
 
-                    b.HasIndex("ContactId");
-
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("UserContactId");
 
                     b.ToTable("UserProducts");
                 });
 
-            modelBuilder.Entity("FullStack.Api.Models.UserProduct", b =>
+            modelBuilder.Entity("FullStack.Api.Models.Cart", b =>
                 {
                     b.HasOne("FullStack.Api.Models.User", "User")
-                        .WithMany("UserProducts")
+                        .WithMany()
                         .HasForeignKey("ContactId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("FullStack.Api.Models.Product", "Product")
-                        .WithMany("UserProducts")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -170,9 +229,32 @@ namespace FullStack.Api.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("FullStack.Api.Models.Product", b =>
+            modelBuilder.Entity("FullStack.Api.Models.Review", b =>
                 {
-                    b.Navigation("UserProducts");
+                    b.HasOne("FullStack.Api.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("FullStack.Api.Models.UserProduct", b =>
+                {
+                    b.HasOne("FullStack.Api.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FullStack.Api.Models.User", "User")
+                        .WithMany("UserProducts")
+                        .HasForeignKey("UserContactId");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FullStack.Api.Models.User", b =>

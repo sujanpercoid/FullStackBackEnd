@@ -61,3 +61,4 @@ D:\sujan\new plular projects\FullStack.Api\FullStack.Api\obj\Debug\net6.0\ref\Fu
 D:\sujan\new plular projects\FullStack.Api\FullStack.Api\bin\Debug\net6.0\AutoMapper.dll
 D:\sujan\new plular projects\FullStack.Api\FullStack.Api\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 D:\sujan\new plular projects\FullStack.Api\FullStack.Api\bin\Debug\net6.0\FullStack.Api.staticwebassets.runtime.json
+D:\sujan\new plular projects\FullStack.Api\FullStack.Api\bin\Debug\net6.0\Dapper.dll

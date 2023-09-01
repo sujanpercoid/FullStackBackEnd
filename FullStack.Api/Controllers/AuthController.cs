@@ -46,7 +46,8 @@ namespace FullStack.Api.Controllers
             var user = _mapper.Map<User>(request);
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
-
+            
+            user.Id = Guid.NewGuid();
             _login.Users.Add(user);
             await _login.SaveChangesAsync();
 
@@ -58,6 +59,11 @@ namespace FullStack.Api.Controllers
         public async Task<ActionResult<string>> Login(LoginDto request)
         {
             var user = await _login.Users.SingleOrDefaultAsync(u => u.Username == request.Username);
+            var active = user.Active;
+            if(active == false)
+            {
+                return BadRequest("User No Longer Exist !!");
+            }
 
             if (user == null)
             {
@@ -105,7 +111,8 @@ namespace FullStack.Api.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> UpdateProfile([FromRoute] Guid id, UserDto request)
         {
-            var profile = await _login.Users.FindAsync(id);
+            var profile = await _login.Users.FirstOrDefaultAsync(u => u.Id == id);
+
             if (profile == null)
             {
                 return NotFound();
@@ -127,13 +134,31 @@ namespace FullStack.Api.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> DeleteProfile([FromRoute] Guid id)
         {
-            var profile = await _login.Users.FindAsync(id);
+            var profile = await _login.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (profile == null)
             {
                 return NotFound();
 
             }
-            _login.Users.Remove(profile);
+            profile.Active = false;
+            var contactIds = await _login.Users
+                        .Where(u => u.Id == id )
+                        .Select(u => u.ContactId)
+                        .ToListAsync();
+            var prodid = await _login.UserProducts
+                        .Where(userProduct => contactIds.Contains(userProduct.ContactId))
+                        .Select(userProduct => userProduct.ProductId)
+                        .ToListAsync();
+            var cartItemsToDeactivate = await _login.Carts
+                       .Where(cartItem => prodid.Contains(cartItem.ProductId))
+                       .ToListAsync();
+
+            foreach (var cartItem in cartItemsToDeactivate)
+            {
+                cartItem.Active = false;
+            }
+
+            //_login.Users.Remove(profile);
             await _login.SaveChangesAsync();
             return Ok(profile);
 

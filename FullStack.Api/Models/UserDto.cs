@@ -10,6 +10,7 @@ namespace FullStack.Api.Models
         public string Password { get; set; } = string.Empty;
         public string fullname { get; set; } = string.Empty;
         public long phone { get; set; }
-       public string email { get; set; }
+        public string email { get; set; }
+        public bool Active { get; set; } = true;
     }
 }

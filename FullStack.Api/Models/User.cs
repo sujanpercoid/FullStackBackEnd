@@ -15,6 +15,7 @@ namespace FullStack.Api.Models
         public string fullname { get; set; } = string.Empty;
         public long phone { get; set; }
         public string email { get; set; }
+        public bool Active { get; set; }= true;
         public ICollection<UserProduct> UserProducts { get; set; }
 
 
