@@ -335,6 +335,62 @@ namespace FullStack.Api.Controllers
             return Ok(cartResponse);
         }
 
+        //Get Product For Edit
+        [HttpGet("edit/{id:int}")]
+        public async Task<IActionResult> UrProdEdit([FromRoute] int id)
+        {
+            var product = await _prod.Products.FirstOrDefaultAsync(x => x.ProductId == id);
+            if (product == null)
+            {
+                return NotFound();
+
+            }
+            return Ok(product);
+        }
+
+
+        //Delete the item
+        [HttpDelete("delete/{id:int}")]
+        public async Task<IActionResult> DeleteItem([FromRoute] int id)
+        {
+            var product = await _prod.Products.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+
+            }
+            _prod.Products.Remove(product);
+            await _prod.SaveChangesAsync();
+            var msg = new
+            {
+                Message = "Item Deleted"
+            };
+            
+            return Ok(msg);
+        }
+
+       //Update your Item
+       [HttpPut("edit/{id:int}")]
+       public async Task <IActionResult> UpdateItem([FromRoute]int id,Product product)
+        {
+            var update = await _prod.Products.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+
+            }
+            update.ProductName = product.ProductName;
+            update.Price = product.Price;
+            update.Category = product.Category;
+            update.Description = product.Description;
+            await _prod.SaveChangesAsync();
+            var msg = new
+            {
+                Message = "Item Updated"
+            };
+            return Ok(msg);
+        }
+
 
 
 
