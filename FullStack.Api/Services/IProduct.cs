@@ -18,6 +18,6 @@ namespace FullStack.Api.Services
        Task<object> MyCart (int id);
        Task<Product> UrProdEdit(int id);
        Task<string> DeleteItem(int id);
-        Task<string> UpdateItem(int id, Product product);
+       Task<string> UpdateItem(int id, Product product);
     }
 }
