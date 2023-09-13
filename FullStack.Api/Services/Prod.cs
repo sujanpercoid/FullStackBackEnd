@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Dapper;
 using FullStack.Api.Data;
 using FullStack.Api.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace FullStack.Api.Services
@@ -9,19 +11,32 @@ namespace FullStack.Api.Services
     {
         private readonly FullStackDbContext _prod;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _config;
         private List<Product> Products; // You should use the 'Product' class here
-        public Prod(FullStackDbContext prod, IMapper mapper)
+        public Prod(FullStackDbContext prod, IMapper mapper,IConfiguration config)
         {
             _prod = prod;
             _mapper = mapper;
+            _config = config;
+            
+        }
+        //Connection string for sql for whole class
+        private SqlConnection CreateConnection()
+        {
+            return new SqlConnection(_config.GetConnectionString("conn"));
         }
 
         //To get single prod info
-        public async Task<Product> GetProduct(int id)
+        public async Task<List<Product>> GetProduct(int id)
         {
-            var product = await _prod.Products.FirstOrDefaultAsync(x => x.ProductId == id);
 
-            return product;
+            //var product = await _prod.Products.FirstOrDefaultAsync(x => x.ProductId == id);
+            using var connection = CreateConnection();
+            var sqlQuery = "SELECT * FROM products WHERE ProductId = @ProductId";
+            var parameters = new { ProductId = id };
+            var products = await connection.QueryAsync<Product>(sqlQuery, parameters);
+
+            return products.ToList();
         }
 
         //To add Item
@@ -78,18 +93,27 @@ namespace FullStack.Api.Services
             return products;
         }
         //Get My Product
-        public async Task<List<Product>> MyProd(int id)
+        public async Task<IEnumerable<Product>> MyProd(int id)
         {
-            var pid = _prod.UserProducts
-           .Where(i => i.ContactId == id)
-           .Select(i => i.ProductId)
-           .ToList();
+            // var pid = _prod.UserProducts
+            //.Where(i => i.ContactId == id)
+            //.Select(i => i.ProductId)
+            //.ToList();
 
-            var myProducts = _prod.Products
-            .Where(i => pid.Contains(i.ProductId))
-            .ToList();
-
-            return myProducts;
+            // var myProducts = _prod.Products
+            // .Where(i => pid.Contains(i.ProductId))
+            // .ToList();
+            // return myProducts;
+            using var connection = CreateConnection();
+            var sql = @" select p.ProductId,
+                        p.ProductName,p.Price,p.Category,p.Description
+                        from products p
+                        inner join userproducts u on p.ProductId = u.ProductId
+                        where u.ContactId = @ContactId";
+            var parameter = new { ContactId = id };
+            var prod = await connection.QueryAsync<Product>(sql, parameter);
+            return prod;
+            
         }
         // Product Review
         public async Task<string> Review(Review review)
@@ -100,12 +124,16 @@ namespace FullStack.Api.Services
         }
 
         // Get Reviews of indivisual products
-        public async Task<List<Review>> GetReview(int id)
+        public async Task<IEnumerable<Review>> GetReview(int id)
         {
-            var reviews = _prod.Reviews
-               .Where(i => i.ProductId == id)
-               .ToList();
-            return reviews;
+            //var reviews = _prod.Reviews
+            //   .Where(i => i.ProductId == id)
+            //   .ToList();
+            using var connection = CreateConnection();
+            var sqlQuery = "SELECT * FROM reviews WHERE ProductId = @ProductId";
+            var parameters = new { ProductId = id };
+            var review = await connection.QueryAsync<Review>(sqlQuery, parameters);
+            return review;
         }
         //Add To Cart
         public async Task<string> Cart(Cart cartItem)
@@ -215,23 +243,32 @@ namespace FullStack.Api.Services
         }
 
         //Get Seller Details
-        public List<object> SellerDetails(int id)
+        public async Task <List<SellerDto>> SellerDetails(int id)
         {
-            var sellerIds = _prod.UserProducts
-                                  .Where(p => p.ProductId == id)
-                                  .Select(p => p.ContactId);
+            //var sellerIds = _prod.UserProducts
+            //                      .Where(p => p.ProductId == id)
+            //                      .Select(p => p.ContactId);
 
-            var sellerDetails = _prod.Users
-                                    .Where(u => sellerIds.Contains(u.ContactId))
-                                    .Select(u => new
-                                    {
-                                        u.Username,
-                                        u.fullname,
-                                        u.phone,
-                                        u.email
-                                    })
-                                    .ToList();
-            return sellerDetails.Select(x => (object)x).ToList(); // we cant directly pass it either we need to convert it to object or create a model ani tesmai halne ho
+            //var sellerDetails = _prod.Users
+            //                        .Where(u => sellerIds.Contains(u.ContactId))
+            //                        .Select(u => new
+            //                        {
+            //                            u.Username,
+            //                            u.fullname,
+            //                            u.phone,
+            //                            u.email
+            //                        })
+            //                        .ToList();
+            //return sellerDetails.Select(x => (object)x).ToList(); // we cant directly pass it either we need to convert it to object or create a model ani tesmai halne ho
+            using var connection = CreateConnection();
+            var sql = @"select u.Username,u.Fullname,u.Phone,u.Email
+                       from users u
+                       inner join userproducts up on u.ContactId = up.ContactId
+                       where up.ProductId = @ProductId";
+            var parameter = new { ProductId = id };
+            var sellers = await connection.QueryAsync<SellerDto>(sql, parameter);
+            return sellers.ToList();
+
         }
         // Get Cart Total
         public async Task<object> MyCart (int id)

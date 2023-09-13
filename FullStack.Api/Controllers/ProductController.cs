@@ -129,9 +129,9 @@ namespace FullStack.Api.Controllers
 
         //Get Seller Details
         [HttpGet("seller/{id:int}")]
-        public IActionResult SellerDetails(int id)
+        public async Task <IActionResult> SellerDetails(int id)
         {
-            var sd = _producti.SellerDetails(id);
+            var sd =await _producti.SellerDetails(id);
             return Ok(sd);
         }
 
