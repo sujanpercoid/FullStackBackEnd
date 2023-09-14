@@ -17,6 +17,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddScoped<IProduct, Prod>();
 builder.Services.AddScoped<IAuth, Auths>();
+builder.Services.AddScoped<ICart,Cartt>();
 
 
 

@@ -97,35 +97,8 @@ namespace FullStack.Api.Controllers
             return Ok(reviews);
         }
 
+        
 
-
-        //item in Cart
-        [HttpPost("cart")]
-        public async Task<IActionResult> Cart([FromBody] Cart cartItem)
-        {
-            var cart = await _producti.Cart(cartItem);
-            return Ok();
-            
-        }
-
-
-
-        //Cart Increase count 
-        [HttpPost("inc")]
-        public async Task<IActionResult> Increase([FromBody] Cart cartItem)
-        {
-            var count = await _producti.Increase(cartItem); 
-             return Ok(); 
-        }
-
-        //To decrease count in Cart
-        [HttpPost("dec")]
-        public async Task<IActionResult> Decrease([FromBody] Cart cartItem)
-        {
-            var dec = await _producti.Decrease(cartItem);
-            return Ok();
-            
-        }
 
         //Get Seller Details
         [HttpGet("seller/{id:int}")]
@@ -135,13 +108,7 @@ namespace FullStack.Api.Controllers
             return Ok(sd);
         }
 
-        //Diplsy MyCard and details like price and  totoal price
-        [HttpGet("cart/{id:int}")]
-        public async Task<IActionResult> MyCart([FromRoute] int id)
-        {
-            var total = await _producti.MyCart(id);
-            return Ok(total);
-        }
+       
 
         //Get Product For Edit
         [HttpGet("edit/{id:int}")]
