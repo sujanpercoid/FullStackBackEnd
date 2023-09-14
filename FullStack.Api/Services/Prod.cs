@@ -77,21 +77,30 @@ namespace FullStack.Api.Services
         //Get All Products
         public async Task<List<Product>> GetAllProduct()
         {
-            var contactIds = await _prod.Users
-                       .Where(user => user.Active == true)
-                       .Select(user => user.ContactId)
-                       .ToListAsync();
+            //var contactIds = await _prod.Users
+            //           .Where(user => user.Active == true)
+            //           .Select(user => user.ContactId)
+            //           .ToListAsync();
 
-            var userProductIds = await _prod.UserProducts
-                                    .Where(userProduct => contactIds.Contains(userProduct.ContactId))
-                                    .Select(userProduct => userProduct.ProductId)
-                                    .ToListAsync();
+            //var userProductIds = await _prod.UserProducts
+            //                        .Where(userProduct => contactIds.Contains(userProduct.ContactId))
+            //                        .Select(userProduct => userProduct.ProductId)
+            //                        .ToListAsync();
 
-            var products = await _prod.Products
-                                .Where(product => userProductIds.Contains(product.ProductId))
-                                .ToListAsync();
-            return products;
-        }
+            //var products = await _prod.Products
+            //                    .Where(product => userProductIds.Contains(product.ProductId))
+            //                    .ToListAsync();
+            using var connection = CreateConnection();
+            var products = await connection.QueryAsync<Product>
+                ( @"select 
+                  p.ProductId, p.ProductName, p.Price, P.Category, p.Description
+                 from Products p
+                 inner join UserProducts up on p.ProductId = up.ProductId
+                 join Users u on u.ContactId = up.ContactId
+                  where u.Active = 1; "
+                );
+                return products.ToList();
+           }
         //Get My Product
         public async Task<IEnumerable<Product>> MyProd(int id)
         {
@@ -271,44 +280,56 @@ namespace FullStack.Api.Services
 
         }
         // Get Cart Total
-        public async Task<object> MyCart (int id)
+        public async Task <List<CartDto>> MyCart (int id)
         {
-            var cartItemsForContact = _prod.Carts.Where(item => item.ContactId == id && item.Active == true).ToList();
-            if (cartItemsForContact.Count == 0)
-            {
-                
+            //var cartItemsForContact = _prod.Carts.Where(item => item.ContactId == id && item.Active == true).ToList();
+            //if (cartItemsForContact.Count == 0)
+            //{
+            //    return "Empty";
               
-            }
+            //}
 
-            var productInfo = cartItemsForContact
+            //var productInfo = cartItemsForContact
 
-                       .GroupBy(item => item.ProductId)
-                       .Select(group => new
-                       {
-                           ProductId = group.Key,
-                           ProductName = group.First().ProductName,
-                           Price = group.First().Price,
-                           Count = group.First().Count,
-                           Total = group.Sum(item => item.Count * item.Price)
-                       })
-                    .ToList();
+            //           .GroupBy(item => item.ProductId)
+            //           .Select(group => new
+            //           {
+            //               ProductId = group.Key,
+            //               ProductName = group.First().ProductName,
+            //               Price = group.First().Price,
+            //               Count = group.First().Count,
+            //               Total = group.Sum(item => item.Count * item.Price)
+            //           })
+            //        .ToList();
+            //long grandTotal = productInfo.Sum(item => item.Total);
 
-
-            long grandTotal = productInfo.Sum(item => item.Total);
-
-            var cartResponse = new
-            {
-                ProductInfo = productInfo.Select(item => new
-                {
-                    ProductId = item.ProductId,
-                    ProductName = item.ProductName,
-                    Price = item.Price,
-                    Count = item.Count,
-                    Total = item.Total
-                }),
-                GrandTotal = grandTotal
-            };
-            return cartResponse;
+            //var cartResponse = new
+            //{
+            //    ProductInfo = productInfo.Select(item => new
+            //    {
+            //        ProductId = item.ProductId,
+            //        ProductName = item.ProductName,
+            //        Price = item.Price,
+            //        Count = item.Count,
+            //        Total = item.Total
+            //    }),
+            //    GrandTotal = grandTotal
+            // };
+            var connection = CreateConnection();
+            var sql = @"  
+              select productid,productname,price,count,(price*count) as total
+              from Carts
+              where active = 1 and ContactId =@ContactId;
+              ";
+            var parameter = new { ContactId = id };
+            var cartResonse = await connection.QueryAsync<CartDto>(sql, parameter);
+            //var grandtotal = await connection.QueryAsync<CartDto>(@"
+            //  select sum(price*count) as grand total
+            //  from Carts
+            //  where active = 1 and ContactId =@ContactId;");
+            
+            
+            return cartResonse.ToList();
         }
         //Get Product info for edit 
         public async Task<Product> UrProdEdit( int id)

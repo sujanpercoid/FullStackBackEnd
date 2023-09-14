@@ -15,7 +15,7 @@ namespace FullStack.Api.Services
        Task<string> Increase(Cart cartItem);
        Task <string> Decrease (Cart cartItem);
        Task <List <SellerDto>> SellerDetails(int id);
-       Task<object> MyCart (int id);
+       Task<List<CartDto>> MyCart (int id);
        Task<Product> UrProdEdit(int id);
        Task<string> DeleteItem(int id);
        Task<string> UpdateItem(int id, Product product);
